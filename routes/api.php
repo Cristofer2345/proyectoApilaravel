@@ -27,6 +27,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/{tarea}/assign', [TareaController::class, 'assignUser']);
         Route::post('/{tarea}/unassign', [TareaController::class, 'unassignUser']);
     });
+    Route::prefix('usuarios')->group(function () {
+        Route::get('/', [AuthController::class, 'getUser']);
+    });
 });
 
 // Rutas de autenticación

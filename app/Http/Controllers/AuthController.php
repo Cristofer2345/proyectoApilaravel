@@ -67,4 +67,15 @@ public function logout(Request $request)
 
     return response()->json(['message' => 'Sesión cerrada correctamente'], 200);
 }
+
+public function getUser()
+{
+    $users = User::select('id', 'name')->get();
+
+    if ($users->isEmpty()) {
+        return response()->json(['message' => 'No se encontraron usuarios.'], 404);
+    }
+
+    return response()->json($users, 200);
+}
 }

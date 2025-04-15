@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Tarea;
 use App\Models\User;
+use App\Events\TareaActualizadaTimeReal;
 
 class TareaController extends Controller
 {
@@ -24,7 +25,7 @@ class TareaController extends Controller
         ]);
 
         $tarea = Tarea::create($request->all());
-
+        TareaActualizadaTimeReal::dispatch($tarea);
         return response()->json($tarea, 201);
     }
 
