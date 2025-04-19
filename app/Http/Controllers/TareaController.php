@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Tarea;
 use App\Models\User;
 use App\Events\TareaActualizadaTimeReal;
+use Illuminate\Support\Facades\Log; 
 
 class TareaController extends Controller
 {
@@ -25,7 +26,13 @@ class TareaController extends Controller
         ]);
 
         $tarea = Tarea::create($request->all());
-        TareaActualizadaTimeReal::dispatch($tarea);
+        try {
+            broadcast(new TareaActualizadaTimeReal($tarea));
+            Log::info("Broadcast ejecutado con éxito");
+        } catch (\Exception $e) {
+            Log::error("Error al emitir evento: " . $e->getMessage());
+        }
+
         return response()->json($tarea, 201);
     }
 
