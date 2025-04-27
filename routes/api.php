@@ -26,6 +26,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{tarea}', [TareaController::class, 'destroy']);
         Route::post('/{tarea}/assign', [TareaController::class, 'assignUser']);
         Route::post('/{tarea}/unassign', [TareaController::class, 'unassignUser']);
+        Route::get('/proyecto/{proyectoId}', [TareaController::class, 'tareasPorProyecto']);
+
     });
     Route::prefix('usuarios')->group(function () {
         Route::get('/', [AuthController::class, 'getUser']);

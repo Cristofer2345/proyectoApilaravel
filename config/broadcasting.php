@@ -13,11 +13,10 @@ return [
             'app_id'  => env('PUSHER_APP_ID'),
             'options' => [
                 'cluster'       => env('PUSHER_APP_CLUSTER'),
-                'useTLS'        => true,
-                // Add curl_options here, inside options!
+                'useTLS'        => false,
                 'curl_options'  => [
-                    CURLOPT_SSL_VERIFYPEER => false,
-                    CURLOPT_SSL_VERIFYHOST => false,
+                    CURLOPT_SSL_VERIFYPEER => 0,
+                    CURLOPT_SSL_VERIFYHOST => 0,
                 ],
             ],
         ],

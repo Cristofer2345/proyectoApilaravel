@@ -55,4 +55,9 @@ class TareaController extends Controller
         Tarea::destroy($id);
         return response()->json(['message' => 'Tarea eliminada']);
     }
+    
+    public function tareasPorProyecto($proyectoId)
+{
+    return Tarea::with(['usuarios', 'proyecto'])->where('id_proyecto', $proyectoId)->get();
+}
 }
