@@ -20,7 +20,7 @@ class TareaController extends Controller
         $request->validate([
             'titulo_tarea' => 'required|string',
             'descripcion' => 'nullable|string',
-            'estado' => 'required|in:pendiente,en_progreso,completada',
+            'estado' => 'required|in:pendiente,en progreso,completada',
             'id_usuario' => 'required|exists:users,id',
             'id_proyecto' => 'required|exists:proyectos,id'
         ]);
@@ -55,7 +55,7 @@ class TareaController extends Controller
         Tarea::destroy($id);
         return response()->json(['message' => 'Tarea eliminada']);
     }
-    
+
     public function tareasPorProyecto($proyectoId)
 {
     return Tarea::with(['usuarios', 'proyecto'])->where('id_proyecto', $proyectoId)->get();
