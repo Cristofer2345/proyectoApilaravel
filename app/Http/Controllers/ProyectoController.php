@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 use App\Models\Proyecto;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class ProyectoController extends Controller
 {
@@ -14,13 +16,22 @@ class ProyectoController extends Controller
 
     public function store(Request $request)
     {
+        if (!Auth::check()) {
+            return response()->json(['error' => 'Usuario no autenticado'], 401);
+        }
+    
         $request->validate([
             'titulo' => 'required|string'
         ]);
+    
+        $proyecto = Proyecto::create([
+            'titulo' => $request->titulo,
+            'created_by' => Auth::user()->id,
+            Log::info("Proyecto creado por el usuario: " . Auth::user()->id)
+        ]);
+    
 
-        $proyecto = Proyecto::create($request->only('titulo'));
-
-        return response()->json($proyecto, 201);
+        return Proyecto::with('usuarios')->findOrFail(Auth::user()->id);
     }
 
     public function show($id)
@@ -62,5 +73,22 @@ class ProyectoController extends Controller
             return response()->json(['error' => $e->getMessage()], 400);
         }
     }
+    public function desasignarUsuario(Request $request, $id)
+{
+    $request->validate([
+        'usuario_id' => 'required|exists:users,id'
+    ]);
+
+    $proyecto = Proyecto::findOrFail($id);
+
+    // Verifica que el usuario esté asignado
+    if (! $proyecto->usuarios()->where('users.id', $request->usuario_id)->exists()) {
+        return response()->json(['error' => 'El usuario no está asignado a este proyecto'], 400);
+    }
+
+    $proyecto->usuarios()->detach($request->usuario_id);
+
+    return response()->json(['message' => 'Usuario desasignado del proyecto']);
+}
     
 }

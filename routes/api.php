@@ -14,6 +14,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{proyecto}', [ProyectoController::class, 'update']);
         Route::delete('/{proyecto}', [ProyectoController::class, 'destroy']);
     Route::post('/{proyecto}/asignar-usuario', [ProyectoController::class, 'asignarUsuario']);
+    Route::post('/{proyecto}/desasignar-usuario', [ProyectoController::class, 'desasignarUsuario']);
     });
 
  
@@ -27,7 +28,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/{tarea}/assign', [TareaController::class, 'assignUser']);
         Route::post('/{tarea}/unassign', [TareaController::class, 'unassignUser']);
         Route::get('/proyecto/{proyectoId}', [TareaController::class, 'tareasPorProyecto']);
-
+       
     });
     Route::prefix('usuarios')->group(function () {
         Route::get('/', [AuthController::class, 'getUser']);
