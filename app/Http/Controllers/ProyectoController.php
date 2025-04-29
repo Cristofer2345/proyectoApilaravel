@@ -5,6 +5,7 @@ use App\Models\Proyecto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use App\Events\ProyectoEventoTimeReal;
 
 class ProyectoController extends Controller
 {
@@ -27,11 +28,12 @@ class ProyectoController extends Controller
         $proyecto = Proyecto::create([
             'titulo' => $request->titulo,
             'created_by' => Auth::user()->id,
-            Log::info("Proyecto creado por el usuario: " . Auth::user()->id)
         ]);
-    
+        broadcast(new ProyectoEventoTimeReal($proyecto, 'añadido'));
 
-        return Proyecto::with('usuarios')->findOrFail(Auth::user()->id);
+
+        return response()->json($proyecto, 201);
+
     }
 
     public function show($id)
@@ -43,13 +45,18 @@ class ProyectoController extends Controller
     {
         $proyecto = Proyecto::findOrFail($id);
         $proyecto->update($request->only('titulo'));
-
+        broadcast(new ProyectoEventoTimeReal($proyecto, 'actualizado'));
         return response()->json($proyecto);
     }
 
     public function destroy($id)
     {
+        $proyecto = Proyecto::findOrFail($id); 
+        $proyectoData = $proyecto->toArray();  
+    
         Proyecto::destroy($id);
+        broadcast(new ProyectoEventoTimeReal((object) $proyectoData, 'eliminado'));
+    
         return response()->json(['message' => 'Proyecto eliminado']);
     }
 

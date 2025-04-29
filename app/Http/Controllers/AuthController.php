@@ -14,7 +14,7 @@ public function register(Request $request)
 {
     $request->validate([
         'name' => 'required|string|max:255',
-        'email' => 'required|string|email|unique:users',
+        'email' => 'required|string|email|unique:users,email', 
         'credencial' => 'required|string|max:255',
         'password' => 'required|string|min:6'
     ]);
