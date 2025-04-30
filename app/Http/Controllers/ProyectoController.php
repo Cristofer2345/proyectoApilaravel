@@ -52,10 +52,10 @@ class ProyectoController extends Controller
     public function destroy($id)
     {
         $proyecto = Proyecto::findOrFail($id); 
-        $proyectoData = $proyecto->toArray();  
+        $proyectoData = $proyecto;  
     
         Proyecto::destroy($id);
-        broadcast(new ProyectoEventoTimeReal((object) $proyectoData, 'eliminado'));
+        broadcast(new ProyectoEventoTimeReal($proyectoData, 'eliminado'));
     
         return response()->json(['message' => 'Proyecto eliminado']);
     }

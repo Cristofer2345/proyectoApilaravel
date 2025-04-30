@@ -18,17 +18,19 @@ class TareaActualizadaTimeReal implements ShouldBroadcastNow
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $tarea;
+    public $accion;
 
-    public function __construct(Tarea $tarea)
+    public function __construct(Tarea $tarea, $accion)
     {
-
+       
         $this->tarea = $tarea;
-        log::info('🔔 Evento de tarea actualizada: ');
+        $this->accion = $accion;
+
+        Log::info("🔔 TareaEventoTimeReal: {$accion} - Tarea ID: {$tarea->id}");
     }
 
     public function broadcastOn()
     {
-        Log::info('🔔 Enviando evento a canal: proyecto.' . $this->tarea->id_proyecto);
         return new Channel('proyecto.' . $this->tarea->id_proyecto);
     }
 

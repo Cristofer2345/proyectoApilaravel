@@ -27,7 +27,7 @@ class TareaController extends Controller
 
         $tarea = Tarea::create($request->all());
         try {
-            broadcast(new TareaActualizadaTimeReal($tarea));
+            broadcast(new TareaActualizadaTimeReal($tarea,'añadido'));
             Log::info("Broadcast ejecutado con éxito");
         } catch (\Exception $e) {
             Log::error("Error al emitir evento: " . $e->getMessage());
@@ -44,15 +44,19 @@ class TareaController extends Controller
     public function update(Request $request, $id)
     {
         $tarea = Tarea::findOrFail($id);
-
+     
         $tarea->update($request->only('titulo_tarea', 'descripcion', 'estado', 'id_usuario', 'id_proyecto'));
-
+        broadcast(new TareaActualizadaTimeReal($tarea,'actualizado'));
         return response()->json($tarea);
     }
 
     public function destroy($id)
+
+    
     {
+        $tarea = Tarea::findOrFail($id);
         Tarea::destroy($id);
+        broadcast(new TareaActualizadaTimeReal($tarea, 'eliminado'));
         return response()->json(['message' => 'Tarea eliminada']);
     }
 
