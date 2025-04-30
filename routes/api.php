@@ -13,8 +13,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{proyecto}', [ProyectoController::class, 'show']);
         Route::put('/{proyecto}', [ProyectoController::class, 'update']);
         Route::delete('/{proyecto}', [ProyectoController::class, 'destroy']);
-    Route::post('/{proyecto}/asignar-usuario', [ProyectoController::class, 'asignarUsuario']);
-    Route::post('/{proyecto}/desasignar-usuario', [ProyectoController::class, 'desasignarUsuario']);
+    Route::post('/{proyecto}/asignar-usuario', [ProyectoController::class, 'asignarUsuarios']);
+    Route::post('/{proyecto}/desasignar-usuario', [ProyectoController::class, 'desasignarUsuarios']);
     });
 
  

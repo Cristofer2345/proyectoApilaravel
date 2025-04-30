@@ -60,42 +60,54 @@ class ProyectoController extends Controller
         return response()->json(['message' => 'Proyecto eliminado']);
     }
 
-    public function asignarUsuario(Request $request, $id)
-    {
-        try {
-            $request->validate([
-                'usuario_id' => 'required|exists:users,id'
-            ]);
-
-            $proyecto = Proyecto::findOrFail($id);
-
-            if ($proyecto->usuarios()->where('id', $request->usuario_id)->exists()) {
-                return response()->json(['error' => 'El usuario ya está asignado a este proyecto'], 400);
-            }
-
-            $proyecto->usuarios()->attach($request->usuario_id);
-
-            return response()->json(['message' => 'Usuario asignado al proyecto']);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
-        }
-    }
-    public function desasignarUsuario(Request $request, $id)
+    public function asignarUsuarios(Request $request, $id)
 {
-    $request->validate([
-        'usuario_id' => 'required|exists:users,id'
-    ]);
+    try {
+        // Validar que usuario_id sea un array y cada valor exista en la tabla users
+        $request->validate([
+            'usuario_id' => 'required|array',
+            'usuario_id.*' => 'exists:users,id',
+        ]);
 
-    $proyecto = Proyecto::findOrFail($id);
+        $proyecto = Proyecto::findOrFail($id);
 
-    // Verifica que el usuario esté asignado
-    if (! $proyecto->usuarios()->where('users.id', $request->usuario_id)->exists()) {
-        return response()->json(['error' => 'El usuario no está asignado a este proyecto'], 400);
+        // Filtra los usuarios que ya están asignados
+        $usuariosNuevos = array_filter($request->usuario_id, function ($userId) use ($proyecto) {
+            return !$proyecto->usuarios()->where('id', $userId)->exists();
+        });
+
+        // Asignar solo los usuarios que no estaban ya asignados
+        $proyecto->usuarios()->attach($usuariosNuevos);
+
+        return response()->json(['message' => 'Usuarios asignados al proyecto correctamente']);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 400);
     }
+}
 
-    $proyecto->usuarios()->detach($request->usuario_id);
+    public function desasignarUsuarios(Request $request, $id)
+{
+    try {
+        // Validar que usuario_id sea un array y cada valor exista en la tabla users
+        $request->validate([
+            'usuario_id' => 'required|array',
+            'usuario_id.*' => 'exists:users,id',
+        ]);
 
-    return response()->json(['message' => 'Usuario desasignado del proyecto']);
+        $proyecto = Proyecto::findOrFail($id);
+
+        // Filtra los usuarios que están asignados
+        $usuariosAEliminar = array_filter($request->usuario_id, function ($userId) use ($proyecto) {
+            return $proyecto->usuarios()->where('id', $userId)->exists();
+        });
+
+        // Desasignar solo los usuarios que estaban asignados
+        $proyecto->usuarios()->detach($usuariosAEliminar);
+
+        return response()->json(['message' => 'Usuarios desasignados del proyecto correctamente']);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 400);
+    }
 }
     
 }
